@@ -22,6 +22,8 @@ tw_dotenv_path = join(dirname(__file__), "twilio.env")
 dotenv_values(tw_dotenv_path)
 twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
 twilio_auth = os.environ.get("TWILIO_AUTH_TOKEN")
+send_number = os.environ.get("SEND_NUMBER")
+recieve_number = os.environ.get("RECIEVE_NUMBER")
 client = Client(twilio_sid, twilio_auth)
 def main():
     """Shows basic usage of the Gmail API.
@@ -50,8 +52,8 @@ def main():
 
     if not messages:
         message = client.messages.create(body="You have no new messages",
-                                         from_="+15203412910",
-                                         to="+19032461634")
+                                         from_=send_number,
+                                         to=recieve_number)
     else:
         message_count= 0
         for message in messages:
