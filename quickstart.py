@@ -1,5 +1,6 @@
 # import the required libraries
 from __future__ import print_function
+from asyncore import dispatcher_with_send
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -14,17 +15,18 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.errors import HttpError
 from os.path import join, dirname
 from twilio.rest import Client
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
-tw_dotenv_path = join(dirname(__file__), "twilio.env")
-dotenv_values(tw_dotenv_path)
+load_dotenv("twilio.env")
 twilio_sid = os.environ.get("TWILIO_ACCOUNT_SID")
 twilio_auth = os.environ.get("TWILIO_AUTH_TOKEN")
 send_number = os.environ.get("SEND_NUMBER")
-recieve_number = os.environ.get("RECIEVE_NUMBER")
+receive_number = os.environ.get("RECEIVE_NUMBER")
+
 client = Client(twilio_sid, twilio_auth)
+
 def main():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
@@ -53,15 +55,15 @@ def main():
     if not messages:
         message = client.messages.create(body="You have no new messages",
                                          from_=send_number,
-                                         to=recieve_number)
+                                         to=receive_number)
     else:
         message_count= 0
         for message in messages:
             msg = service.users().messages().get(userId='me', id=message['id']).execute
             message_count = message_count + 1
         message = client.messages.create(body="You have " + str(message_count) + " new messages",
-                                         from_="+15203412910",
-                                         to="+19032461634")
+                                         from_=send_number,
+                                         to=receive_number)
   
 if __name__ == '__main__':
     main()
